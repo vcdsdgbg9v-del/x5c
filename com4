@@ -1,0 +1,11 @@
+CPM email/password
+       ↓
+Firebase verifyPassword
+       ↓
+idToken
+       ↓
+GetPlayerRecords
+       ↓
+JSON بيانات اللاعب
+       ↓
+غـشيـم
