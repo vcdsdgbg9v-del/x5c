@@ -1,0 +1,61 @@
+import requests
+import getpass
+
+API = "https://cpmcheats.hostzera.com.br/api2"
+
+access_key = input("Access Key: ").strip()
+email = input("CPM Email: ").strip()
+password = getpass.getpass("CPM Password: ")
+
+# 1) Login
+login = requests.post(
+    f"{API}/account_login",
+    params={
+        "key": access_key,
+        "acc_email": email,
+        "acc_pass": password
+    },
+    data={
+        "account_email": email,
+        "account_password": password
+    },
+    timeout=20
+)
+
+print("Login HTTP:", login.status_code)
+
+result = login.json()
+print("Login response:", result)
+
+if not result.get("ok"):
+    raise SystemExit("Login failed.")
+
+auth_token = result.get("auth")
+
+if not auth_token:
+    raise SystemExit("No auth token returned.")
+
+# 2) Get player data
+data_response = requests.post(
+    f"{API}/get_data",
+    params={"key": access_key},
+    data={"account_auth": auth_token},
+    timeout=20
+)
+
+print("Data HTTP:", data_response.status_code)
+
+player = data_response.json()
+print("Player response:", player)
+
+# 3) Display basic fields only
+if player.get("ok"):
+    data = player.get("data", {})
+
+    print("\n--- PLAYER DATA ---")
+    print("Name:", data.get("Name"))
+    print("Player ID:", data.get("localID"))
+    print("Money:", data.get("money"))
+    print("Coins:", data.get("coin"))
+else:
+    print("get_data failed.")
